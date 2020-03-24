@@ -1,7 +1,6 @@
 console.log("Hello Extension");
 
 function getUserSelection() {
-  console.log("up");
   if (window.getSelection) {
     const selection = window.getSelection().toString();
     console.log("selection", selection);
@@ -26,10 +25,36 @@ function getUserSelection() {
       .then(res => {
         console.log("res", res);
         if (res.list && res.list.length > 0) {
-          console.log("traduction", res.list[0].destWord);
-          alert(res.list[0].destWord);
+          const translation = res.list[0].destWord;
+          console.log("traduction", translation);
+          insertHtmlAfterSelection(window.getSelection(), translation);
         }
       });
+  }
+}
+
+// https://stackoverflow.com/questions/3597116/insert-html-after-a-selection
+function insertHtmlAfterSelection(selectionObject, translation) {
+  let range;
+  let expandedSelRange;
+  let node;
+  if (selectionObject.getRangeAt && selectionObject.rangeCount) {
+    range = selectionObject.getRangeAt(0);
+    expandedSelRange = range.cloneRange();
+    range.collapse(false);
+
+    // Range.createContextualFragment() would be useful here but is
+    // non-standard and not supported in all browsers (IE9, for one)
+    const el = document.createElement("div");
+    el.innerHTML = ` [FR: ${translation} ] `;
+    let frag = document.createDocumentFragment();
+    let node;
+    let lastNode;
+    while ((node = el.firstChild)) {
+      lastNode = frag.appendChild(node);
+    }
+    range.insertNode(frag);
+    selectionObject.empty();
   }
 }
 
