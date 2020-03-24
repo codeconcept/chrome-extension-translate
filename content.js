@@ -27,6 +27,7 @@ function getUserSelection() {
         console.log("res", res);
         if (res.list && res.list.length > 0) {
           console.log("traduction", res.list[0].destWord);
+          alert(res.list[0].destWord);
         }
       });
   }
